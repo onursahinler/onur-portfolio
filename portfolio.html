@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onur Sahinler - Software Test Engineer Portfolio</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    
+    #game-container {
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    
+    /* Animated Background Particles */
+    .floating-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: float 6s infinite ease-in-out;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+      50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+    }
+    
+    .game-title {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #2c3e50;
+      font-size: 2.8em;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      z-index: 1000;
+      text-align: center;
+    }
+    
+    .game-subtitle {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #34495e;
+      font-size: 1.2em;
+      font-weight: 500;
+      z-index: 1000;
+      text-align: center;
+    }
+    
+    .zones-container {
+      position: absolute;
+      top: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      max-width: 800px;
+      width: 100%;
+      padding: 0 20px;
+      z-index: 100;
+    }
+    
+    .zone {
+      width: 220px;
+      height: 140px;
+      border: 3px solid #34495e;
+      border-radius: 20px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      color: white;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+    
+    .zone:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+    
+    .zone-icon {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    
+    .zone-title {
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    
+    /* Zone colors and backgrounds */
+    #about-me { 
+      background: linear-gradient(145deg, #ff6b6b, #ff8e8e);
+    }
+    #experience { 
+      background: linear-gradient(145deg, #4ecdc4, #44a08d);
+    }
+    #projects { 
+      background: linear-gradient(145deg, #45b7d1, #96c93d);
+    }
+    #certs { 
+      background: linear-gradient(145deg, #f9ca24, #f0932b);
+    }
+    #contact { 
+      background: linear-gradient(145deg, #6c5ce7, #a29bfe);
+    }
+    #additional-info { 
+      background: linear-gradient(145deg, #fd79a8, #fdcb6e);
+    }
+    #skills { 
+      background: linear-gradient(145deg, #fd79a8, #fdcb6e);
+    }
+    #hobbies { 
+      background: linear-gradient(145deg, #00b894, #00cec9);
+    }
+    #education { 
+      background: linear-gradient(145deg, #a29bfe, #6c5ce7);
+    }
+
+    .character {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background-image: url('Avatar.png');
+      background-size: cover;
+      background-position: center;
+      top: 80px;
+      left: 50px;
+      transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 200;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    
+    /* Walking Animation */
+    .character.walking {
+      animation: walk 0.6s infinite alternate;
+    }
+    
+    @keyframes walk {
+      0% { transform: translateY(0px) rotate(-2deg); }
+      100% { transform: translateY(-3px) rotate(2deg); }
+    }
+    
+    .character:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(0,0,0,0.4);
+      border-color: #f39c12;
+    }
+    
+    .character::after {
+      content: '👋';
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .character:hover::after {
+      opacity: 1;
+    }
+    
+    /* Speech Bubble */
+    .speech-bubble {
+      position: absolute;
+      background: white;
+      border-radius: 15px;
+      padding: 15px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 250px;
+      font-size: 14px;
+      color: #2c3e50;
+      z-index: 300;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 20px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid white;
+    }
+    
+    .speech-bubble.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .info-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+    
+    .info-panel h2 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-size: 1.8em;
+    }
+    
+    .info-panel p {
+      color: #34495e;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .close-btn:hover {
+      background: #c0392b;
+    }
+    
+    .game-instructions {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #2c3e50;
+      font-size: 1em;
+      text-align: right;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+      max-width: 300px;
+      width: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 2px solid rgba(52, 73, 94, 0.2);
+      z-index: 1000;
+    }
+    
+    .cv-download {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 12px 18px;
+      border-radius: 25px;
+      cursor: pointer;
+      z-index: 1000;
+      border: 2px solid rgba(52, 73, 94, 0.2);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: #2c3e50;
+      font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .cv-download:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    
+
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .zones-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        max-width: 600px;
+      }
+      
+      .zone {
+        width: 180px;
+        height: 120px;
+      }
+      
+      .game-title {
+        font-size: 2.2em;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .zones-container {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 15px;
+        max-width: 300px;
+      }
+      
+      .zone {
+        width: 250px;
+        height: 100px;
+      }
+      
+      .game-title {
+        font-size: 1.8em;
+        top: 10px;
+      }
+      
+      .game-subtitle {
+        font-size: 1em;
+        top: 60px;
+      }
+      
+      .game-instructions {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        text-align: center;
+        max-width: calc(100% - 40px);
+        font-size: 0.9em;
+        padding: 12px 15px;
+      }
+      
+      .cv-download {
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .game-instructions {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+        font-size: 0.8em;
+        padding: 10px 12px;
+      }
+      
+      .cv-download {
+        top: 5px;
+        left: 5px;
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      
+      .game-title {
+        font-size: 1.5em;
+        top: 5px;
+      }
+      
+      .game-subtitle {
+        font-size: 0.9em;
+        top: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <!-- Animated Background Particles -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <h1 class="game-title">Onur Şahinler</h1>
+    <p class="game-subtitle">Computer Engineer</p>
+    <p class="game-subtitle" style="top: 100px;">Software Testing Enthusiast</p>
+    <div class="character"></div>
+    
+    <!-- Speech Bubble -->
+    <div class="speech-bubble" id="speech-bubble"></div>
+    
+    <!-- Game Zones in 3x3 Grid -->
+    <div class="zones-container">
+      <div class="zone" id="about-me">
+        <div class="zone-icon">👨‍💼</div>
+        <div class="zone-title">About Me</div>
+      </div>
+      <div class="zone" id="experience">
+        <div class="zone-icon">💼</div>
+        <div class="zone-title">Experience</div>
+      </div>
+      <div class="zone" id="projects">
+        <div class="zone-icon">🚀</div>
+        <div class="zone-title">Projects</div>
+      </div>
+      <div class="zone" id="skills">
+        <div class="zone-icon">💻</div>
+        <div class="zone-title">Skills</div>
+      </div>
+      <div class="zone" id="certs">
+        <div class="zone-icon">🏆</div>
+        <div class="zone-title">Certificates & Awards</div>
+      </div>
+      <div class="zone" id="hobbies">
+        <div class="zone-icon">⚽</div>
+        <div class="zone-title">Hobbies</div>
+      </div>
+      <div class="zone" id="education">
+        <div class="zone-icon">🎓</div>
+        <div class="zone-title">Education</div>
+      </div>
+      <div class="zone" id="contact">
+        <div class="zone-icon">📞</div>
+        <div class="zone-title">Contact</div>
+      </div>
+              <div class="zone" id="additional-info">
+          <div class="zone-icon">🤔</div>
+          <div class="zone-title">Don't Leave Without Reading This!</div>
+        </div>
+    </div>
+    
+    <!-- Info Panel -->
+    <div class="info-panel" id="info-panel">
+      <button class="close-btn" onclick="closeInfoPanel()">×</button>
+      <h2 id="panel-title">Welcome!</h2>
+      <div id="panel-content">
+        <p>Click on different zones to learn more about me!</p>
+      </div>
+    </div>
+    
+    <!-- CV Download Button -->
+    <a href="Onur_Sahinler_CV.pdf" download class="cv-download">
+      📄 Download CV
+    </a>
+    
+  </div>
+
+
+
+  <script>
+    const character = document.querySelector('.character');
+    const infoPanel = document.getElementById('info-panel');
+    const panelTitle = document.getElementById('panel-title');
+    const panelContent = document.getElementById('panel-content');
+    const speechBubble = document.getElementById('speech-bubble');
+    
+    // Track character's current zone
+    let currentCharacterZone = null;
+    
+    // Speech bubble messages for each zone
+    const speechMessages = {
+      'about-me': [
+        "You're about to read my story, I hope you like it. "
+      ],
+      'experience': [
+        "Let's see what I've experienced in my work life. ",
+      ],
+      'projects': [
+        "If you found any of my projects interesting, please don't hesitate to contact me :)",
+      ],
+      'skills': [
+        "I hope it's okay if I brag a little about myself in this section 🙃",
+      ],
+      'certs': [
+        "The results of some of my work. Let's explore them together! 🏅",
+      ],
+      'hobbies': [
+        "My favorite part to talk about. I hope we have some common hobbies ☺️",
+      ],
+      'education': [
+        "Let's examine together what stages brought me here! 🎓",
+      ],
+      'contact': [
+        "I'm delighted that you want to get in touch with me. Looking forward to meeting you :)",
+      ],
+      'additional-info': [
+        "I want to give you one last piece of information about myself. Are you excited?"
+      ]
+};
+    
+    // Create floating particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+    
+
+    
+    // Show speech bubble
+    function showSpeechBubble(message) {
+      speechBubble.textContent = message;
+      speechBubble.style.left = (character.offsetLeft + 80) + 'px';
+      speechBubble.style.top = (character.offsetTop - 60) + 'px';
+      speechBubble.classList.add('show');
+      
+      setTimeout(() => {
+        speechBubble.classList.remove('show');
+      }, 2000);
+    }
+    
+    // Content for each zone
+    const zoneContent = {
+      'about-me': {
+        title: '👨‍💻 About Me',
+        content: `
+          <p><strong>Hello! I'm Onur Şahinler, a Computer Engineering graduate passionate about Software Testing!</strong></p>
+          <p>The main reason I chose computer engineering was my passion for computers and electronic devices from an early age.</p>
+          <p>Seeing how technology shapes our lives and the idea of being part of this transformation provides me with great motivation. In the software development process, I want to develop projects that benefit humanity by utilizing both my analytical thinking skills and my ability to approach problems from different perspectives.</p>
+          <p>I prefer working with a team rather than working alone. Being in dialogue with people, developing projects through discussion and debate has always made me feel better.</p>
+          <p>By the way, I was born and raised in İzmir, Türkiye :)</p>
+        `
+      },
+      'experience': {
+        title: '💼 Professional Experience',
+        content: `
+                      <div style="margin-bottom: 30px;">
+              <h3 style="color: #2c3e50; margin-bottom: 8px;">Test Camp Participant</h3>
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Commencis</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">04/2024 - 05/2025</p>
+              <p>Completed the 6-week Commencis Test Camp, gaining hands-on experience in software testing, test techniques, test management tools, and CI/CD practices under the mentorship of experienced QA professionals.</p>
+              <div style="background: rgba(52, 73, 94, 0.08); padding: 12px; border-radius: 8px; margin-top: 12px;">
+                <p style="color: #2c3e50; font-weight: bold; margin-bottom: 8px; font-size: 14px;">🔧 Key Skills:</p>
+                <ul style="color: #34495e; line-height: 1.5; font-size: 13px; margin: 0; padding-left: 20px;">
+                  <li>Software Testing Fundamentals</li>
+                  <li>Test Management Tools</li>
+                  <li>CI/CD Practices</li>
+                  <li>QA Best Practices</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+              <h3 style="color: #2c3e50; margin-bottom: 8px;">Software Test Engineer Intern</h3>
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">BeforeSunset AI</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">06/2024 – 10/2024</p>
+              <p>I completed a Software Test Engineer internship at BeforeSunset AI, where I contributed to improving product quality and reliability. I conducted functional, design, and performance testing, identified and reported bugs, and collaborated with developers to resolve issues. Additionally, I optimized database queries to enhance application performance and gained hands-on experience in test automation, debugging, and QA best practices within an agile environment.</p>
+              <div style="background: rgba(52, 73, 94, 0.08); padding: 12px; border-radius: 8px; margin-top: 12px;">
+                <p style="color: #2c3e50; font-weight: bold; margin-bottom: 8px; font-size: 14px;">🔧 Key Skills:</p>
+                <ul style="color: #34495e; line-height: 1.5; font-size: 13px; margin: 0; padding-left: 20px;">
+                  <li>Functional & Non-functional Testing</li>
+                  <li>Manual Testing</li>
+                  <li>Performance Testing</li>
+                  <li>Agile Development Practices</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+              <h3 style="color: #2c3e50; margin-bottom: 8px;">Co-Founder and Former Board Member</h3>
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">IZTECH-Lösev Fayda Society</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">10/2024 – 07/2025</p>
+              <p>Co-founder and former board member of the Lösev Fayda Community at IZTECH, where I served as Sponsorship Coordinator and Treasurer. Actively organized events and initiatives to support children with leukemia, while fostering social responsibility and community engagement among students.</p>
+              <div style="background: rgba(52, 73, 94, 0.08); padding: 12px; border-radius: 8px; margin-top: 12px;">
+                <p style="color: #2c3e50; font-weight: bold; margin-bottom: 8px; font-size: 14px;">🔧 Key Skills:</p>
+                <ul style="color: #34495e; line-height: 1.5; font-size: 13px; margin: 0; padding-left: 20px;">
+                  <li>Team Leadership & Management</li>
+                  <li>Project Coordination</li>
+                  <li>Financial Management</li>
+                  <li>Social Responsibility</li>
+                </ul>
+              </div>
+            </div>
+        `
+      },
+      'projects': {
+        title: '🚀 Projects',
+        content: `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">⚡ Real-Time EV Charging Station Locator</h3>
+            <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Team Leader & Full-stack Developer & Software Test Engineer</p>
+            <p>Mobile web application for EV users to locate and reserve charging stations in real-time. Implemented smart optimization algorithms considering user preferences, traffic, weather, and cost.</p>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🤖 Machine Learning & Deep Learning</h3>
+            <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">ML Engineer & Data Scientist</p>
+            <p>Multiple ML projects including Heart Disease Prediction, Text Classification, Image Clustering & Retrieval, and Transfer Learning for Animal Image Classification using TensorFlow-Keras.</p>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">♻️ Smart Waste Monitoring System</h3>
+            <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Project Manager & Embedded Systems Developer & Mobile Developer</p>
+            <p>Low-cost smart trash bin monitoring system using Arduino and Flutter. Integrated dual ultrasonic sensors and Bluetooth for real-time fill-level tracking with mobile app integration.</p>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🎓 Online Internship Management System</h3>
+            <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Front-end Developer & Software Test Engineer</p>
+            <p>Platform designed to simplify the internship process for IZTECH Computer Engineering students. Automates documentation tasks and provides user-friendly interface for internship management.</p>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">💪 BuildYourself</h3>
+            <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Full-stack Developer & Project Manager</p>
+            <p>Mobile application revolutionizing gym reservation process. Users can select body parts to train, view equipment availability, and see other users' workout plans during selected time slots.</p>
+          </div>
+        `
+      },
+      'skills': {
+        title: '🛠️ Technical Skills',
+        content: `
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <h3 style="color: #2c3e50; margin-bottom: 12px; font-size: 16px;">🧪 Testing & Quality Assurance</h3>
+              <ul style="color: #34495e; line-height: 1.6; font-size: 14px; margin: 0; padding-left: 20px;">
+                <li>Software Testing</li>
+                <li>Mobile Testing</li>
+                <li>Test Automation</li>
+                <li>Information Security</li>
+              </ul>
+            </div>
+            
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <h3 style="color: #2c3e50; margin-bottom: 12px; font-size: 16px;">💻 Programming & Development</h3>
+              <ul style="color: #34495e; line-height: 1.6; font-size: 14px; margin: 0; padding-left: 20px;">
+                <li>Python</li>
+                <li>SQL</li>
+                <li>React & HTML/CSS</li>
+                <li>Flutter & Dart</li>
+              </ul>
+            </div>
+            
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <h3 style="color: #2c3e50; margin-bottom: 12px; font-size: 16px;">🤖 Advanced Technologies</h3>
+              <ul style="color: #34495e; line-height: 1.6; font-size: 14px; margin: 0; padding-left: 20px;">
+                <li>Machine Learning & Deep Learning</li>
+                <li>Matlab & Simulink</li>
+                <li>Embedded Systems</li>
+                <li>UI/UX Design</li>
+              </ul>
+            </div>
+            
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <h3 style="color: #2c3e50; margin-bottom: 12px; font-size: 16px;">👥 Soft Skills & Management</h3>
+              <ul style="color: #34495e; line-height: 1.6; font-size: 14px; margin: 0; padding-left: 20px;">
+                <li>Project Management</li>
+                <li>Team Collaboration</li>
+                <li>Problem Solving</li>
+                <li>Communication</li>
+              </ul>
+            </div>
+            
+          </div>
+          
+        `
+      },
+      'certs': {
+        title: '🏆 Certificates & Awards',
+        content: `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">📚 Professional Certifications</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">ISTQB Foundation Level Certificate</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">2025</p>
+              <p>Certified in software testing fundamentals and best practices.</p>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🏅 Community Recognition</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Fayda (Benefit) Community of the Year Award</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">December 5th, 2024 - International Volunteer Day</p>
+              <p>Our community was recognized as the FAYDA Community of the Year by the Foundation for Children with Leukemia (LÖSEV) for outstanding contributions to volunteerism and social responsibility among all FAYDA communities.</p>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🎓 Training Programs</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">2025 Software Testing Bootcamp</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">2025</p>
+              <p>Intensive training program focused on modern software testing methodologies and tools.</p>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">👥 Leadership & Social Responsibility</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Social Awareness and Leadership Certificate</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">2025</p>
+              <p>Recognition for outstanding leadership and social responsibility initiatives.</p>
+            </div>
+          </div>
+          
+          
+        `
+      },
+      'hobbies': {
+        title: '🎱 Hobbies & Personality',
+        content: `
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">⚽ Football</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #34495e; line-height: 1.6; margin: 0;">
+                I've been playing football since I can remember. I played in the youth teams of Bucaspor and Altay until high school, 
+                and I continue to play as a hobby.
+              </p>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🏋️ Bodybuilding</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #34495e; line-height: 1.6; margin: 0;">
+                I've been actively involved in bodybuilding for the past 3 years. This is definitely one of the best decisions 
+                I've made in my life regarding discipline. I want to continue this as long as I can.
+              </p>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🌍 Traveling</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #34495e; line-height: 1.6; margin: 0;">
+                Traveling abroad to see different cultures and meet different people is truly enjoyable. Despite my young age, 
+                I've visited 13 countries outside of Turkey, and I want to see as many places as possible in my lifetime. 
+              </p>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🧱 Lego Collection</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #34495e; line-height: 1.6; margin: 0;">
+                For the past 2 years, I've been building a Lego collection. It's relaxing to sit quietly and build collections 
+                in my free time.
+              </p>
+            </div>
+          </div>
+        
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🏀 Sports Following</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #34495e; line-height: 1.6; margin: 0;">
+                While I may not actively play all sports, I follow various sports with great interest. Some of these include 
+                basketball, tennis, and snooker.
+              </p>
+            </div>
+          </div>
+        `
+      },
+      'education': {
+        title: '🎓 Education',
+        content: `
+                    <div style="background: rgba(52, 73, 94, 0.08); padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 15px; text-align: center;">🏠 Educational Journey in İzmir</h3>
+            <p style="color: #34495e; text-align: center; line-height: 1.6; margin: 0;">
+              I completed my entire education in İzmir, a beautiful coastal city in Turkey. 
+              This journey shaped my academic foundation and prepared me for my career in technology.
+            </p>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🎓 Higher Education</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">İzmir Institute of Technology (IZTECH)</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">Computer Engineering - Bachelor's Degree</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">100% English Medium of Instruction</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">GPA: 3.01</p>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">🏫 Secondary Education</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Fatma Saygın Anadolu Lisesi</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">High School Diploma</p>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <h3 style="color: #2c3e50; margin-bottom: 8px;">📚 Primary & Middle School</h3>
+            <div style="background: rgba(52, 73, 94, 0.08); padding: 15px; border-radius: 10px;">
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px;">Buca Ortaokulu</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">Secondary School</p>
+              <p style="color: #e74c3c; font-weight: bold; margin-bottom: 5px; margin-top: 15px;">Çakabey İlkokulu</p>
+              <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 10px;">Primary School</p>
+            </div>
+          </div>
+          
+        `
+      },
+              'contact': {
+          title: '🎯 Contact & Connect',
+          content: `
+            <p><strong>Feel free to reach out - projects, advice, experience sharing... I'm open to chatting about anything!</strong></p>
+            <p>📧 <strong>Email:</strong> <a href="mailto:sahinleronur9@gmail.com" style="color: #e74c3c; text-decoration: none;">sahinleronur9@gmail.com</a></p>
+            <p>💼 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/onur-şahinler-b39bb9224/" target="_blank" style="color: #e74c3c; text-decoration: none;">linkedin.com/in/onur-şahinler-b39bb9224/</a></p>
+            <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/onursahinler/" target="_blank" style="color: #e74c3c; text-decoration: none;">github.com/onursahinler/</a></p>
+            <p>📱 <strong>Instagram:</strong> <a href="https://www.instagram.com/onurshnlr7/" target="_blank" style="color: #e74c3c; text-decoration: none;">@onurshnlr7</a></p>
+            <p>🌍 <strong>Location:</strong> İzmir, Türkiye</p>
+          `
+        },
+        'additional-info': {
+          title: 'ℹ️ Additional Info',
+                      content: `
+              <div style="background: rgba(52, 73, 94, 0.08); padding: 20px; border-radius: 15px; margin-top: 25px;">
+                <h3 style="color: #2c3e50; margin-bottom: 15px; text-align: center;">😅 A Little Secret About This Website</h3>
+                <p style="color: #34495e; line-height: 1.6; margin: 0; text-align: justify;">
+                  I know this website isn't very professional or visually appealing 😅 Actually, this is an intentional choice. 
+                  The field I want to build my career in - software testing - is exactly about finding bugs on sites like this, 
+                  reporting them, and helping make them better.
+                </p>
+                <br>
+                <p style="color: #34495e; line-height: 1.6; margin: 0; text-align: justify;">
+                  I've already listed the bugs, design flaws, and user experience issues on this site myself. 
+                  Completely fixing them is the developers' job 😅. Good projects emerge through everyone's efforts. 
+                  This site is actually just a small project I worked on in my free time. 
+                  If you had even the slightest smile on your face while browsing my site, that makes me happy :)
+                </p>
+                <br>
+                <p style="color: #34495e; line-height: 1.6; margin: 0; text-align: justify;">
+                  By creating an imperfect site, I'm preparing myself for the situations I'll encounter in the real world. 
+                  After all, people who can find their own mistakes have less trouble finding mistakes made by others 😄.
+                </p>
+              </div>
+            `
+        }
+    };
+
+    // Zone click handler
+    document.querySelectorAll('.zone').forEach(zone => {
+      zone.addEventListener('click', (e) => {
+        const zoneId = e.target.closest('.zone').id;
+        const rect = e.target.closest('.zone').getBoundingClientRect();
+        
+        // Track current zone
+        currentCharacterZone = zoneId;
+        
+        // Add walking animation
+        character.classList.add('walking');
+        
+        // Move character to zone
+        character.style.top = (rect.top + window.scrollY + rect.height/2 - 35) + 'px';
+        character.style.left = (rect.left + window.scrollX + rect.width/2 - 35) + 'px';
+        
+        // Show speech bubble after movement
+        setTimeout(() => {
+          character.classList.remove('walking');
+          const zoneMessages = speechMessages[zoneId] || speechMessages['about-me'];
+          const randomMessage = zoneMessages[Math.floor(Math.random() * zoneMessages.length)];
+          showSpeechBubble(randomMessage);
+        }, 1500);
+        
+        // Show info panel after speech bubble closes
+        setTimeout(() => {
+          showInfoPanel(zoneId);
+        }, 3500);
+      });
+    });
+
+    function showInfoPanel(zoneId) {
+      const content = zoneContent[zoneId];
+      if (content) {
+        panelTitle.innerHTML = content.title;
+        panelContent.innerHTML = content.content;
+        infoPanel.style.display = 'block';
+      }
+    }
+
+    function closeInfoPanel() {
+      infoPanel.style.display = 'none';
+    }
+
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (e.target === infoPanel || !infoPanel.contains(e.target)) {
+        closeInfoPanel();
+      }
+    });
+    
+    // Handle window resize - update character position
+    window.addEventListener('resize', () => {
+      // If character is positioned on a zone, update its position
+      if (currentCharacterZone) {
+        const currentZone = document.getElementById(currentCharacterZone);
+        if (currentZone) {
+          const rect = currentZone.getBoundingClientRect();
+          character.style.top = (rect.top + window.scrollY + rect.height/2 - 35) + 'px';
+          character.style.left = (rect.left + window.scrollX + rect.width/2 - 35) + 'px';
+        }
+      }
+    });
+    
+    // Initialize particles
+    createParticles();
+  </script>
+</body>
+</html>
